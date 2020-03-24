@@ -1,0 +1,13 @@
+dist: bionic
+language: minimal
+arch:
+  - ppc64le
+  - amd64
+
+docker: true
+
+before_script:
+  - ci/install_deps.sh || travis_terminate 1;
+
+script:
+  - ci/build.sh || travis_terminate 1;
