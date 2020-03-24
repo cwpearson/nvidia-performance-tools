@@ -1,5 +1,7 @@
 # Nvidia Performance Tools
 
+[![Build Status](https://travis-ci.com/cwpearson/nvidia-performance-tools.svg?branch=master)](https://travis-ci.com/cwpearson/nvidia-performance-tools)
+
 ## Docker images with Nvidia's Performance Tools
 
 [cwpearson/nvidia-performance-tools on Docker Hub](https://hub.docker.com/repository/docker/cwpearson/nvidia-performance-tools).
