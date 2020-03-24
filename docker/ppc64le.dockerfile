@@ -6,8 +6,7 @@ LABEL maintainer="Carl Pearson"
 # prevent prompts during apt-get
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update
-RUN apt-get install -y -q --no-install-recommends --no-install-suggests \
+RUN apt-get update && apt-get install -y -q --no-install-recommends --no-install-suggests \
   cmake \
   libglib2.0 \
   && rm -rf /var/lib/apt/lists/*
