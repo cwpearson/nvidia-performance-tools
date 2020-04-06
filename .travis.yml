@@ -1,10 +1,16 @@
 dist: bionic
 language: minimal
-arch:
-  - ppc64le
-  - amd64
 
-docker: true
+jobs:
+  include:
+    - arch: ppc64le
+      env: BUILD_DOCKER=1
+      docker: true
+    - arch: amd64
+      env: BUILD_DOCKER=1
+      docker: true
+    - env: BUILD_TYPE=Release
+    - env: BUILD_TYPE=Debug
 
 before_script:
   - ci/install_deps.sh || travis_terminate 1;

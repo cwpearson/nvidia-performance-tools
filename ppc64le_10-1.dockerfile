@@ -1,4 +1,4 @@
-FROM nvidia/cuda-ppc64le:10.2-devel-ubuntu18.04
+FROM nvidia/cuda-ppc64le:10.1-devel-ubuntu18.04
 
 # Set one or more individual labels
 LABEL maintainer="Carl Pearson"
@@ -20,6 +20,8 @@ COPY NVIDIA_Nsight_Systems_Power_CLI_Only_2020.2.1.71.deb nsight_systems.deb
 RUN chmod +x nsight_compute.run
 RUN TERM=xterm ./nsight_compute.run --quiet -- -noprompt -targetpath=/usr/local/NVIDIA-Nsight-Compute
 ENV PATH=$PATH:/usr/local/NVIDIA-Nsight-Compute
+RUN rm nsight_compute.run
 
 # install Nsight Systems
 RUN dpkg -i nsight_systems.deb
+RUN rm nsight_systems.deb
