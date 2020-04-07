@@ -18,7 +18,7 @@ fi
 
 # deps for building code
 if [[ $BUILD_TYPE != '' ]]; then
-    cs $HOME
+    cd $HOME
 
     ## install CMake
     wget -qSL https://github.com/Kitware/CMake/releases/download/v3.8.2/cmake-3.8.2-Linux-x86_64.tar.gz -O cmake.tar.gz
