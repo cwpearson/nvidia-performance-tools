@@ -7,9 +7,12 @@
 [cwpearson/nvidia-performance-tools on Docker Hub](https://hub.docker.com/repository/docker/cwpearson/nvidia-performance-tools).
 
 ```bash
-docker pull cwpearson/nvidia-performance-tools/latest-amd64
-docker pull cwpearson/nvidia-performance-tools/latest-ppc64le
+docker pull cwpearson/nvidia-performance-tools:latest-amd64   # for x86
+docker pull cwpearson/nvidia-performance-tools:latest-ppc64le # for POWER
 ```
+
+Typically, you'll want the `latest-amd64` or `latest-ppc64le` tags.
+If you are developing a workflow and want stability, choose a tag like `amd64-10.1-master-ce03360`, which describes the architecture, CUDA version, branch, and short SHA of the corresponding git commit for [cwpearson/nvidia-performance-tools on Github](github.com/cwpearson/nvidia-performance-tools).
 
 ## Presentations
 
@@ -80,6 +83,10 @@ Resume a previously exited container:
 * docker start <ID>  # resume the exited container
 * docker attach <ID> # attach a terminal to the container
 ```
+
+## For Developers
+
+See [DEVELOPING.md](DEVELOPING.md)
 
 ## Resources
 
