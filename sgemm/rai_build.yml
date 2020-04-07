@@ -13,7 +13,7 @@ commands:
     - nvidia-smi
     - nsys status -e
     - cp -r /src .
-    - cmake /src
+    - cmake /src -DCMAKE_BUILD_TYPE=Release
     - make
     - echo "run without profiling"
     - ./sgemm-basic
