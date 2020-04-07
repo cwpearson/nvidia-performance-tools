@@ -19,7 +19,7 @@ COPY NVIDIA_Nsight_Systems_Power_CLI_Only_2020.2.1.71.deb nsight_systems.deb
 # install script seems to want TERM set
 RUN chmod +x nsight_compute.run
 RUN TERM=xterm ./nsight_compute.run --quiet -- -noprompt -targetpath=/usr/local/NVIDIA-Nsight-Compute
-ENV PATH=$PATH:/usr/local/NVIDIA-Nsight-Compute
+ENV PATH /usr/local/NVIDIA-Nsight-Compute:${PATH}
 RUN rm nsight_compute.run
 
 # install Nsight Systems

@@ -54,6 +54,9 @@ nsys profile a.out
 
 * `docker ps -a`
 * `docker rm `docker ps -a -q``
+* `docker system prune`
+
+
 
 Run a profiling container:
 ```bash
