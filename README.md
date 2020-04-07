@@ -39,10 +39,23 @@ nv-nsight-cu-cli a.out
 nv-nsight-cu-cli --csv a.out
 ```
 
+**Only certain kernels:**
+
+The `--kernel-id` flag takes a string like `context-id:stream-id:[name-operator:]kernel-name:invocation-nr`.
+Commonly, we might only use `kernel-name`, to select kernels to profile by name, and `invocation-nr`, to select which invocation of the kernels to profile.
+
+In this example, we profile the `mygemm` kernel's 6th invocation.
+
+```
+nv-nsight-cu-cli --kernel-id "::mygemm:6" sgemm-basic
+```
+
 Get supported metrics
 ```
 nv-nsight-cu-cli --devices 0 --query-metrics >my_metrics.txt
 ```
+
+
 
 ## Nsight Systems
 
@@ -55,8 +68,6 @@ nsys profile a.out
 * `docker ps -a`
 * `docker rm `docker ps -a -q``
 * `docker system prune`
-
-
 
 Run a profiling container:
 ```bash
@@ -72,7 +83,7 @@ Resume a previously exited container:
 
 ## Resources
 
-* [Nvidia Nsight Systems Docs](https://docs.nvidia.com/nsight-systems/index.html)
+* [Nvidia Nsight Systems Docs](https://docs.nvidia.com/nsight-systems/)
 * [Nvidia Nsight Compute Docs](https://docs.nvidia.com/nsight-compute/)
 * [Using Nvidia Nsight Systems in Containers and the Cloud](https://devblogs.nvidia.com/nvidia-nsight-systems-containers-cloud/)
 * [Using Nsight Compute to Inspect your Kernels](https://devblogs.nvidia.com/using-nsight-compute-to-inspect-your-kernels/)

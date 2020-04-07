@@ -12,6 +12,7 @@ commands:
   build:
     - env
     - nsys version
+    - nv-nsight-cu-cli --version
     - ls -l /usr/local/NVIDIA-Nsight-Compute
     - nvidia-smi
     - nsys status -e
@@ -23,7 +24,9 @@ commands:
     - ./sgemm-tiled
     - ./sgemm-regtiled-coarsened
     - echo "Nsight Compute"
-    - nv-nsight-cu-cli --kernel-id *:*:mygemm:6 sgemm-basic
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 sgemm-basic
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 sgemm-tiled
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 sgemm-regtiled-coarsened
     - echo "Nsight Systems timeline"
     - nsys profile -f true -o sgemm-basic.qdrep              sgemm-basic 
     - nsys profile -f true -o sgemm-tiled.qdrep              sgemm-tiled
