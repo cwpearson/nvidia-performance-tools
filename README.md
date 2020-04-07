@@ -37,7 +37,11 @@ docker pull cwpearson/nvidia-performance-tools/latest-ppc64le
 ```bash
 nv-nsight-cu-cli a.out
 nv-nsight-cu-cli --csv a.out
+```
 
+Get supported metrics
+```
+nv-nsight-cu-cli --devices 0 --query-metrics >my_metrics.txt
 ```
 
 ## Nsight Systems
@@ -65,4 +69,7 @@ Resume a previously exited container:
 
 ## Resources
 
+* [Nvidia Nsight Systems Docs](https://docs.nvidia.com/nsight-systems/index.html)
+* [Nvidia Nsight Compute Docs](https://docs.nvidia.com/nsight-compute/)
 * [Using Nvidia Nsight Systems in Containers and the Cloud](https://devblogs.nvidia.com/nvidia-nsight-systems-containers-cloud/)
+* [Using Nsight Compute to Inspect your Kernels](https://devblogs.nvidia.com/using-nsight-compute-to-inspect-your-kernels/)

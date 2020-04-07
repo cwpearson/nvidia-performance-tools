@@ -89,11 +89,13 @@ int main(int argc, char **argv) {
 
   int nIters = 5;
   int nWarmup = 5;
+  bool noCheck = false;
   parser.add_positional(m);
   parser.add_positional(n);
   parser.add_positional(k);
   parser.add_option(nIters, "--iters");
   parser.add_option(nWarmup, "--warmup");
+  parser.add_flag(noCheck, "--no-check");
 
   if (!parser.parse(argc, argv)) {
     parser.help();
@@ -142,7 +144,7 @@ int main(int argc, char **argv) {
     CUDA_RUNTIME(cudaEventSynchronize(stop));
 
     // check result once
-    if (i == 0) {
+    if (!noCheck && 0 == i) {
       // copy result to host
       CUDA_RUNTIME(cudaMemcpy(cHost.data(), cDev, cHost.size() * sizeof(float),
                               cudaMemcpyDefault));
@@ -170,7 +172,7 @@ int main(int argc, char **argv) {
 
   // print results
   double gflops = flop / ((elapsed / nIters) / 1000) / 1e9;
-  std::cerr << gflops << "GFLOPS (" << flop << " flop, "
+  std::cerr << "regtiled " << gflops << "GFLOPS (" << flop << " flop, "
             << (elapsed / nIters) / 1000 << "s)\n";
 
   // release resources
