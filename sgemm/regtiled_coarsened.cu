@@ -4,13 +4,13 @@
 
 #include "common.hpp"
 
-#define TILE_SZ_A 128
+#define TILE_SZ_A 64
 #define TILE_SZ_B 16
 #define TILE_SZ_RATIO (TILE_SZ_A / TILE_SZ_B)
 
 /* NOTE: A and C are column major, B is row major
  */
-__global__ void mygemm(float *c,       //<! [out] and MxN matrix
+__global__ void mygemm(float * __restrict__ c,       //<! [out] and MxN matrix
                        const float *a, //<! [in] an MxK matrix
                        const float *b, //<! [in] an KxN matrix
                        const int M, const int N, const int K) {
@@ -24,7 +24,7 @@ __global__ void mygemm(float *c,       //<! [out] and MxN matrix
   __shared__ float B_s[TILE_SZ_RATIO][TILE_SZ_B];
 
   // Index variables
-  const unsigned int row = blockIdx.x * blockDim.x + threadIdx.x;
+  const unsigned int row = blockDim.x * blockIdx.x + threadIdx.x;
   const unsigned int col = blockIdx.y * TILE_SZ_B;
 
   // Privatization of output variables
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
   CUDA_RUNTIME(cudaEventCreate(&stop));
 
   // GPU kernel launch parameters
-  dim3 dimGrid((m - 1) / TILE_SZ_A + 1, (n - 1) / TILE_SZ_B + 1);
+  dim3 dimGrid((m + TILE_SZ_A - 1) / TILE_SZ_A, (n +TILE_SZ_B - 1) / TILE_SZ_B);
   dim3 dimBlock(TILE_SZ_A, 1);
 
   // total elapsed time

@@ -4,11 +4,11 @@
 
 #include "common.hpp"
 
-#define TILE_WIDTH 16
+#define TILE_WIDTH 32
 
 /* NOTE: A and C are column major, B is row major
  */
-__global__ void mygemm(float *c,       //<! [out] and MxN matrix
+__global__ void mygemm(float * __restrict__ c,       //<! [out] and MxN matrix
                        const float *a, //<! [in] an MxK matrix
                        const float *b, //<! [in] an KxN matrix
                        const int M, const int N, const int K) {

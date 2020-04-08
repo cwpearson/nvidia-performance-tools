@@ -6,7 +6,7 @@
 
 /* NOTE: A and C are column major, B is row major
  */
-__global__ void mygemm(float *c,       //<! [out] and MxN matrix
+__global__ void mygemm(float * __restrict__ c,       //<! [out] and MxN matrix
                        const float *a, //<! [in] an MxK matrix
                        const float *b, //<! [in] an KxN matrix
                        const int M, const int N, const int K) {
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
   CUDA_RUNTIME(cudaEventCreate(&stop));
 
   // GPU kernel launch parameters
-  dim3 dimBlock(32, 8);
+  dim3 dimBlock(32, 32);
   dim3 dimGrid;
   dimGrid.x = (n + dimBlock.x - 1) / dimBlock.x;
   dimGrid.y = (m + dimBlock.y - 1) / dimBlock.y;
