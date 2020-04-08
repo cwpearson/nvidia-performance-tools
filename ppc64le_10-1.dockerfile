@@ -18,8 +18,10 @@ COPY NVIDIA_Nsight_Systems_Power_CLI_Only_2020.2.1.71.deb nsight_systems.deb
 # install Nsight Compute
 # install script seems to want TERM set
 RUN chmod +x nsight_compute.run
-RUN TERM=xterm ./nsight_compute.run --quiet -- -noprompt -targetpath=/usr/local/NVIDIA-Nsight-Compute
-ENV PATH /usr/local/NVIDIA-Nsight-Compute:${PATH}
+RUN TERM=xterm ./nsight_compute.run --quiet -- -noprompt -targetpath=/opt/NVIDIA-Nsight-Compute
+ENV PATH /opt/NVIDIA-Nsight-Compute:${PATH}
+# work around rai jobs having a different path than docker run
+RUN ln -s /opt/NVIDIA-Nsight-Compute/nv-nsight-cu-cli /usr/local/bin/nv-nsight-cu-cli
 RUN rm nsight_compute.run
 
 # install Nsight Systems
