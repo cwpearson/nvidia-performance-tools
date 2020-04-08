@@ -1,6 +1,6 @@
 rai:
   version: 0.2
-  image: cwpearson/nvidia-performance-tools:amd64-10.1-master-ce03360
+  image: cwpearson/nvidia-performance-tools:amd64-10.1-master-c4d1bb1
 resources:
   cpu:
     architecture: amd64
@@ -13,7 +13,9 @@ commands:
     - env
     - nsys version
     - nv-nsight-cu-cli --version
-    - ls -l /usr/local/NVIDIA-Nsight-Compute
+    - echo "List supported metrics and sections"
+    - #bash -c "nv-nsight-cu-cli --devices 0 --query-metrics | tee metrics.txt"
+    - #bash -c "nv-nsight-cu-cli --list-sections             | tee sections.txt"
     - nvidia-smi
     - nsys status -e
     - cp -r /src .
@@ -24,10 +26,11 @@ commands:
     - ./sgemm-tiled
     - ./sgemm-regtiled-coarsened
     - echo "Nsight Compute"
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 sgemm-basic
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 sgemm-tiled
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 sgemm-regtiled-coarsened
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o sgemm-basic              sgemm-basic
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o sgemm-tiled              sgemm-tiled
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o sgemm-regtiled-coarsened sgemm-regtiled-coarsened
     - echo "Nsight Systems timeline"
     - nsys profile -f true -o sgemm-basic.qdrep              sgemm-basic 
     - nsys profile -f true -o sgemm-tiled.qdrep              sgemm-tiled
     - nsys profile -f true -o sgemm-regtiled-coarsened.qdrep sgemm-regtiled-coarsened
+    - du -sh .

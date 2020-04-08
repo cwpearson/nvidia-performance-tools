@@ -42,6 +42,34 @@ nv-nsight-cu-cli a.out
 nv-nsight-cu-cli --csv a.out
 ```
 
+```
+nv-nsight-cu-cli --list-sections
+---------------------------- ------------------------------- --------------------------------------------------
+Identifier                    Display Name                    Filename                                          
+----------------------------- ------------------------------- --------------------------------------------------
+ComputeWorkloadAnalysis       Compute Workload Analysis       .../../../sections/ComputeWorkloadAnalysis.section
+InstructionStats              Instruction Statistics          ...64/../../sections/InstructionStatistics.section
+LaunchStats                   Launch Statistics               ...1_3-x64/../../sections/LaunchStatistics.section
+MemoryWorkloadAnalysis        Memory Workload Analysis        ...4/../../sections/MemoryWorkloadAnalysis.section
+MemoryWorkloadAnalysis_Chart  Memory Workload Analysis Chart  ..../sections/MemoryWorkloadAnalysis_Chart.section
+MemoryWorkloadAnalysis_Tables Memory Workload Analysis Tables .../sections/MemoryWorkloadAnalysis_Tables.section
+Occupancy                     Occupancy                       ...ibc_2_11_3-x64/../../sections/Occupancy.section
+SchedulerStats                Scheduler Statistics            ...-x64/../../sections/SchedulerStatistics.section
+SourceCounters                Source Counters                 ..._11_3-x64/../../sections/SourceCounters.section
+SpeedOfLight                  GPU Speed Of Light              ..._2_11_3-x64/../../sections/SpeedOfLight.section
+WarpStateStats                Warp State Statistics           ...-x64/../../sections/WarpStateStatistics.section
+```
+
+**Creating a report**
+
+```
+nv-nsight-cu-cli -o report ...
+```
+
+Then open the report in the NVIDIA Nsight Compute GUI: 
+
+File > Open File > `report.nsight-cuprof-report`
+
 **Only certain kernels:**
 
 The `--kernel-id` flag takes a string like `context-id:stream-id:[name-operator:]kernel-name:invocation-nr`.

@@ -38,31 +38,32 @@ int main(int argc, char **argv) {
   argparse::Parser parser;
 
   // default matrix sizes:
-  // A: 307 x 313
-  // B: 313 x 311
-  // C: 307 x 311
-  int m = 307;
-  int n = 311;
-  int k = 313;
+  // A: 1489 x 1493
+  // B: 1493 x 1499
+  // C: 1489 x 1499
+  int m = 1489;
+  int n = 1499;
+  int k = 1493;
 
   int nIters = 5;
   int nWarmup = 5;
-  bool noCheck = false;
+  bool check = false;
   parser.add_positional(m);
   parser.add_positional(n);
   parser.add_positional(k);
   parser.add_option(nIters, "--iters");
   parser.add_option(nWarmup, "--warmup");
-  parser.add_flag(noCheck, "--no-check");
+  parser.add_flag(check, "--check");
 
   if (!parser.parse(argc, argv)) {
     parser.help();
     exit(EXIT_FAILURE);
   }
 
-  const int64_t flop = m * n * k * 2;
+  const int64_t flop = int64_t(m) * int64_t(n) * int64_t(k) * 2;
 
   // initialize host data
+  std::cerr << "generate data\n";
   std::vector<float> aHost(m * k), bHost(k * n), cHost(m * n), cExpected(m * n);
   std::generate(aHost.begin(), aHost.end(), random_int);
   std::generate(bHost.begin(), bHost.end(), random_int);
@@ -74,6 +75,7 @@ int main(int argc, char **argv) {
   CUDA_RUNTIME(cudaMalloc(&cDev, cHost.size() * sizeof(float)));
 
   // copy data to device
+  std::cerr << "transfer to GPU\n";
   CUDA_RUNTIME(cudaMemcpy(aDev, aHost.data(), aHost.size() * sizeof(float),
                           cudaMemcpyDefault));
   CUDA_RUNTIME(cudaMemcpy(bDev, bHost.data(), bHost.size() * sizeof(float),
@@ -104,7 +106,7 @@ int main(int argc, char **argv) {
     CUDA_RUNTIME(cudaEventSynchronize(stop));
 
     // check result once
-    if (!noCheck && 0 == i) {
+    if (check && 0 == i) {
       // copy result to host
       CUDA_RUNTIME(cudaMemcpy(cHost.data(), cDev, cHost.size() * sizeof(float),
                               cudaMemcpyDefault));
