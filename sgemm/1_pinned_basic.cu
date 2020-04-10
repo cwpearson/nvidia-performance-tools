@@ -1,14 +1,16 @@
 #include <algorithm>
 
+#include <nvToolsExt.h>
+
 #include <argparse/argparse.hpp>
 
 #include "common.hpp"
 
 /* NOTE: A and C are column major, B is row major
  */
-__global__ void mygemm(float * __restrict__ c,       //<! [out] and MxN matrix
-                       const float *a, //<! [in] an MxK matrix
-                       const float *b, //<! [in] an KxN matrix
+__global__ void mygemm(float *__restrict__ c, //<! [out] and MxN matrix
+                       const float *a,        //<! [in] an MxK matrix
+                       const float *b,        //<! [in] an KxN matrix
                        const int M, const int N, const int K) {
 
 #define A(_i, _j) a[(_i) + (_j)*M]
@@ -64,22 +66,30 @@ int main(int argc, char **argv) {
 
   // initialize host data
   std::cerr << "generate data\n";
-  std::vector<float> aHost(m * k), bHost(k * n), cHost(m * n), cExpected(m * n);
-  std::generate(aHost.begin(), aHost.end(), random_int);
-  std::generate(bHost.begin(), bHost.end(), random_int);
+  nvtxRangePush("generate data");
+  float *aHost, *bHost, *cHost, *cExpected;
+  CUDA_RUNTIME(cudaHostAlloc(&aHost, m * k * sizeof(float), 0));
+  CUDA_RUNTIME(cudaHostAlloc(&bHost, k * n * sizeof(float), 0));
+  CUDA_RUNTIME(cudaHostAlloc(&cHost, m * n * sizeof(float), 0));
+  CUDA_RUNTIME(cudaHostAlloc(&cExpected, m * n * sizeof(float), 0));
+  std::generate(aHost, aHost + m * k, random_int);
+  std::generate(bHost, bHost + k * n, random_int);
+  nvtxRangePop();
 
   // allocate device data
   float *aDev, *bDev, *cDev;
-  CUDA_RUNTIME(cudaMalloc(&aDev, aHost.size() * sizeof(float)));
-  CUDA_RUNTIME(cudaMalloc(&bDev, bHost.size() * sizeof(float)));
-  CUDA_RUNTIME(cudaMalloc(&cDev, cHost.size() * sizeof(float)));
+  CUDA_RUNTIME(cudaMalloc(&aDev, m * k * sizeof(float)));
+  CUDA_RUNTIME(cudaMalloc(&bDev, k * n * sizeof(float)));
+  CUDA_RUNTIME(cudaMalloc(&cDev, m * n * sizeof(float)));
 
   // copy data to device
   std::cerr << "transfer to GPU\n";
-  CUDA_RUNTIME(cudaMemcpy(aDev, aHost.data(), aHost.size() * sizeof(float),
-                          cudaMemcpyDefault));
-  CUDA_RUNTIME(cudaMemcpy(bDev, bHost.data(), bHost.size() * sizeof(float),
-                          cudaMemcpyDefault));
+  nvtxRangePush("host-to-device");
+  CUDA_RUNTIME(
+      cudaMemcpy(aDev, aHost, m * k * sizeof(float), cudaMemcpyDefault));
+  CUDA_RUNTIME(
+      cudaMemcpy(bDev, bHost, k * n * sizeof(float), cudaMemcpyDefault));
+  nvtxRangePop();
 
   // create events to time GPU kernel
   cudaEvent_t start, stop;
@@ -100,21 +110,23 @@ int main(int argc, char **argv) {
      Record the time after nWarmup runs complete.
   */
   for (int i = 0; i < nIters + nWarmup; ++i) {
+    nvtxRangePush("kernel");
     CUDA_RUNTIME(cudaEventRecord(start));
     mygemm<<<dimGrid, dimBlock>>>(cDev, aDev, bDev, m, n, k);
     CUDA_RUNTIME(cudaEventRecord(stop));
     CUDA_RUNTIME(cudaEventSynchronize(stop));
+    nvtxRangePop();
 
     // check result once
     if (check && 0 == i) {
       // copy result to host
-      CUDA_RUNTIME(cudaMemcpy(cHost.data(), cDev, cHost.size() * sizeof(float),
-                              cudaMemcpyDefault));
+      CUDA_RUNTIME(
+          cudaMemcpy(cHost, cDev, m * n * sizeof(float), cudaMemcpyDefault));
 
       // check result on host
-      cpu_gemm(cExpected.data(), aHost.data(), bHost.data(), m, n, k);
+      cpu_gemm(cExpected, aHost, bHost, m, n, k);
 
-      for (size_t i = 0; i < cExpected.size(); ++i) {
+      for (size_t i = 0; i < m * n; ++i) {
         if (!equal(cExpected[i], cHost[i], 1e-6)) {
           std::cerr << "Error!\n";
           exit(EXIT_FAILURE);
@@ -134,7 +146,7 @@ int main(int argc, char **argv) {
 
   // print results
   double gflops = flop / ((elapsed / nIters) / 1000) / 1e9;
-  std::cerr << "basic " << gflops << "GFLOPS (" << flop << " flop, "
+  std::cerr << "kernel " << gflops << "GFLOPS (" << flop << " flop, "
             << (elapsed / nIters) / 1000 << "s)\n";
 
   // release resources
@@ -143,5 +155,9 @@ int main(int argc, char **argv) {
   CUDA_RUNTIME(cudaFree(aDev));
   CUDA_RUNTIME(cudaFree(bDev));
   CUDA_RUNTIME(cudaFree(cDev));
+  CUDA_RUNTIME(cudaFreeHost(aHost));
+  CUDA_RUNTIME(cudaFreeHost(bHost));
+  CUDA_RUNTIME(cudaFreeHost(cHost));
+  CUDA_RUNTIME(cudaFreeHost(cExpected));
   return 0;
 }

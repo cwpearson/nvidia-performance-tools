@@ -17,6 +17,21 @@ include_directories(PUBLIC SYSTEM include)
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo")
 
 add_executable(sgemm-cpu cpu.cpp)
-add_executable(sgemm-basic basic.cu)
-add_executable(sgemm-tiled tiled.cu)
-add_executable(sgemm-regtiled-coarsened regtiled_coarsened.cu)
+
+add_executable(0-pageable-basic 0_pageable_basic.cu)
+target_link_libraries(0-pageable-basic nvToolsExt)
+
+add_executable(1-pinned-basic 1_pinned_basic.cu)
+target_link_libraries(1-pinned-basic nvToolsExt)
+
+add_executable(2-pinned-tiled 2_pinned_tiled.cu)
+target_link_libraries(2-pinned-tiled nvToolsExt)
+
+add_executable(3-pinned-joint 3_pinned_joint.cu)
+target_link_libraries(3-pinned-joint nvToolsExt)
+
+add_executable(4-pinned-joint-wall 4_pinned_joint_wall.cu)
+target_link_libraries(4-pinned-joint-wall nvToolsExt)
+
+add_executable(5-pinned-joint-overlap 5_pinned_joint_overlap.cu)
+target_link_libraries(5-pinned-joint-overlap nvToolsExt)

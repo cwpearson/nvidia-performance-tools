@@ -121,7 +121,11 @@ See [DEVELOPING.md](DEVELOPING.md)
 
 * [Nvidia Nsight Systems Docs](https://docs.nvidia.com/nsight-systems/)
 * [Nvidia Nsight Compute Docs](https://docs.nvidia.com/nsight-compute/)
-* [Using Nvidia Nsight Systems in Containers and the Cloud](https://devblogs.nvidia.com/nvidia-nsight-systems-containers-cloud/)
-* [Using Nsight Compute to Inspect your Kernels](https://devblogs.nvidia.com/using-nsight-compute-to-inspect-your-kernels/)
+
 * `docs/GEMM-joint-tiling.ppt`: Joint-tiling slide deck from ECE 508 Spring 2017
 * [Nsight Graphics Stall Reasons](https://docs.nvidia.com/drive/drive_os_5.1.12.0L/nsight-graphics/activities/#shaderprofiler_stallreasons)
+
+* NVIDIA Devloper Blog
+  * [Nsight Systems Exposes GPU Optimization (May 30 2018)](https://devblogs.nvidia.com/nsight-systems-exposes-gpu-optimization/)
+  * [Using Nsight Compute to Inspect your Kernels](https://devblogs.nvidia.com/using-nsight-compute-to-inspect-your-kernels/)
+  * [Using Nvidia Nsight Systems in Containers and the Cloud](https://devblogs.nvidia.com/nvidia-nsight-systems-containers-cloud/)
