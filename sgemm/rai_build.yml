@@ -10,7 +10,9 @@ resources:
   cache: false
 commands:
   build:
+    - which nsys
     - nsys version
+    - which nv-nsight-cu-cli
     - nv-nsight-cu-cli --version
     - nvidia-smi
     - echo "Check Nsight Configurations"
