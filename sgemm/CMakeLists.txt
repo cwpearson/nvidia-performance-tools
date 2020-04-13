@@ -18,8 +18,8 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo")
 
 add_executable(sgemm-cpu cpu.cpp)
 
-add_executable(1_1-pinned-basic 1_1_pinned_basic.cu)
-target_link_libraries(1_1-pinned-basic nvToolsExt)
+add_executable(1-1-pinned-basic 1_1_pinned_basic.cu)
+target_link_libraries(1-1-pinned-basic nvToolsExt)
 
 add_executable(1-2-pinned-tiled 1_2_pinned_tiled.cu)
 target_link_libraries(1-2-pinned-tiled nvToolsExt)

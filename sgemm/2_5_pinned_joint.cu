@@ -108,7 +108,7 @@ __global__ void mygemm(float *__restrict__ c, //<! [out] and MxN matrix
   const int64_t flop = int64_t(m) * int64_t(n) * int64_t(k) * 2 * nIters;
 
   // initialize host data
-  std::cerr << "generate data\n";
+  std::cout << "generate data\n";
   nvtxRangePush("generate data");
   float *aHost, *bHost, *cHost;
   CUDA_RUNTIME(cudaHostAlloc(&aHost, m * k * sizeof(float), 0));
@@ -166,7 +166,7 @@ __global__ void mygemm(float *__restrict__ c, //<! [out] and MxN matrix
 
     Duration wallElapsed = Clock::now() - wallStart;
 
-    std::cerr << iter << " kernel=" << kernelElapsed
+    std::cout << iter << " kernel=" << kernelElapsed
               << " wall=" << wallElapsed.count()
               << (iter >= nWarmup ? " *" : "  ") << "\n";
 
@@ -179,10 +179,10 @@ __global__ void mygemm(float *__restrict__ c, //<! [out] and MxN matrix
 
   // print results
   double kernelGflops = flop / 1e9 / kernelTime;
-  std::cerr << "kernel " << kernelGflops << "GFLOPS (" << flop << " flop, "
+  std::cout << "kernel " << kernelGflops << "GFLOPS (" << flop << " flop, "
             << kernelTime << "s)\n";
   double wallGflops = flop / 1e9 / wallTime;
-  std::cerr << "wall " << wallGflops << "GFLOPS (" << flop << " flop, "
+  std::cout << "wall " << wallGflops << "GFLOPS (" << flop << " flop, "
             << wallTime << "s)\n";
   // release resources
   CUDA_RUNTIME(cudaEventDestroy(start));

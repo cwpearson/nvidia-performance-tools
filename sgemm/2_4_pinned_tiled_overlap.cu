@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
   const int64_t flop = int64_t(m) / 2 * int64_t(n) / 2 * int64_t(k) * 2 * 4 * nIters;
 
   // initialize host data
-  std::cerr << "generate data\n";
+  std::cout << "generate data\n";
   nvtxRangePush("generate data");
   float *aHost[2], *bHost[2], *cHost[2][2];
   CUDA_RUNTIME(cudaHostAlloc(&aHost[0], m / 2 * k * sizeof(float), 0));
@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
   nvtxRangePop();
 
   // allocate device data
-  std::cerr << "allocate data\n";
+  std::cout << "allocate data\n";
   float *aDev[2], *bDev[2], *cDev[2][2];
   CUDA_RUNTIME(cudaMalloc(&aDev[0], m / 2 * k * sizeof(float)));
   CUDA_RUNTIME(cudaMalloc(&aDev[1], m / 2 * k * sizeof(float)));
@@ -213,7 +213,7 @@ int main(int argc, char **argv) {
     CUDA_RUNTIME(cudaEventElapsedTime(&kernelElapsed, waitForA0B0, waitC[1][1]));
     kernelElapsed /= 1000; // seconds
 
-    std::cerr << iter << " kernel=" << kernelElapsed
+    std::cout << iter << " kernel=" << kernelElapsed
               << " wall=" << wallElapsed.count()
               << (iter >= nWarmup ? " *" : "  ") << "\n";
 
@@ -225,10 +225,10 @@ int main(int argc, char **argv) {
 
   // print results
   double kernelGflops = flop / 1e9 / kernelTime;
-  std::cerr << "kernel " << kernelGflops << "GFLOPS (" << flop << " flop, "
+  std::cout << "kernel " << kernelGflops << "GFLOPS (" << flop << " flop, "
             << kernelTime << "s)\n";
   double wallGflops = flop / 1e9 / wallTime;
-  std::cerr << "wall " << wallGflops << "GFLOPS (" << flop << " flop, "
+  std::cout << "wall " << wallGflops << "GFLOPS (" << flop << " flop, "
             << wallTime << "s)\n";
   // release resources
 

@@ -10,30 +10,35 @@ resources:
   cache: false
 commands:
   build:
-    - env
     - nsys version
     - nv-nsight-cu-cli --version
-    - echo "List supported metrics and sections"
-    - #bash -c "nv-nsight-cu-cli --devices 0 --query-metrics | tee metrics.txt"
-    - #bash -c "nv-nsight-cu-cli --list-sections             | tee sections.txt"
     - nvidia-smi
-    - nsys status -e
+    - echo "Check Nsight Configurations"
+    - bash -c "nv-nsight-cu-cli --devices 0 --query-metrics > metrics.txt"
+    - bash -c "nv-nsight-cu-cli --list-sections             > sections.txt"
+    - bash -c "nsys status -e                          2>&1 > status.txt"
     - cp -r /src .
     - cmake /src -DCMAKE_BUILD_TYPE=Release
     - make
     - echo "run without profiling"
-    - ./sgemm-basic
-    - ./sgemm-tiled
-    - ./sgemm-regtiled-coarsened
-    - echo "Nsight Compute"
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 0-pageable-basic       0-pageable-basic
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 1-pinned-basic         1-pinned-basic
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 2-pinned-tiled         2-pinned-tiled
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 3-pinned-joint         3-pinned-joint
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 4-pinned-joint-wall    4-pinned-joint-wall
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 5-pinned-joint-overlap 5-pinned-joint-overlap
-    - echo "Nsight Systems timeline"
-    - nsys profile -f true -o sgemm-basic.qdrep              sgemm-basic 
-    - nsys profile -f true -o sgemm-tiled.qdrep              sgemm-tiled
-    - nsys profile -f true -o sgemm-regtiled-coarsened.qdrep sgemm-regtiled-coarsened
+    - bash -c "./1-1-pinned-basic         | tee 1-1-pinned-basic.txt"
+    - bash -c "./1-2-pinned-tiled         | tee 1-2-pinned-tiled.txt"
+    - bash -c "./1-3-pinned-joint         | tee 1-3-pinned-joint.txt"
+    - bash -c "./2-1-pageable-basic       | tee 2-1-pageable-basic.txt"
+    - bash -c "./2-2-pinned-basic         | tee 2-2-pinned-basic.txt"
+    - bash -c "./2-3-pinned-tiled         | tee 2-3-pinned-tiled.txt"
+    - bash -c "./2-4-pinned-tiled-overlap | tee 2-4-pinned-tiled-overlap.txt"
+    - bash -c "./2-5-pinned-joint         | tee 2-5-pinned-joint.txt"
+    - bash -c "./2-6-pinned-joint-overlap | tee 2-6-pinned-joint-overlap.txt"
+    - echo "Nsight Compute Results"
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 1-1-pinned-basic 1-1-pinned-basic
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 1-2-pinned-tiled 1-2-pinned-tiled
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 1-3-pinned-joint 1-3-pinned-joint
+    - echo "Nsight Systems Results"
+    - nsys profile -o 2-1-pageable-basic       2-1-pageable-basic 
+    - nsys profile -o 2-2-pinned-basic         2-2-pinned-basic
+    - nsys profile -o 2-3-pinned-tiled         2-3-pinned-tiled
+    - nsys profile -o 2-4-pinned-tiled-overlap 2-4-pinned-tiled-overlap 
+    - nsys profile -o 2-5-pinned-joint         2-5-pinned-joint
+    - nsys profile -o 2-6-pinned-joint-overlap 2-6-pinned-joint-overlap
     - du -sh .

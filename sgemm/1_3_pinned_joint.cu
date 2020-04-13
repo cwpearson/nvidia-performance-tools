@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
   const int64_t flop = int64_t(m) * int64_t(n) * int64_t(k) * 2;
 
   // initialize host data
-  std::cerr << "generate data\n";
+  std::cout << "generate data\n";
   nvtxRangePush("generate data");
   float *aHost, *bHost, *cHost, *cExpected;
   CUDA_RUNTIME(cudaHostAlloc(&aHost, m * k * sizeof(float), 0));
@@ -125,7 +125,7 @@ int main(int argc, char **argv) {
   CUDA_RUNTIME(cudaMalloc(&cDev, m * n * sizeof(float)));
 
   // copy data to device
-  std::cerr << "transfer to GPU\n";
+  std::cout << "transfer to GPU\n";
   nvtxRangePush("host-to-device");
   CUDA_RUNTIME(
       cudaMemcpy(aDev, aHost, m * k * sizeof(float), cudaMemcpyDefault));
@@ -166,7 +166,7 @@ int main(int argc, char **argv) {
 
       for (size_t i = 0; i < m * n; ++i) {
         if (!equal(cExpected[i], cHost[i], 1e-6)) {
-          std::cerr << "Error!\n";
+          std::cout << "Error!\n";
           exit(EXIT_FAILURE);
         }
       }
@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
 
     float millis;
     CUDA_RUNTIME(cudaEventElapsedTime(&millis, start, stop));
-    std::cerr << i << ": " << millis << (i >= nWarmup ? " *" : " ") << "\n";
+    std::cout << i << ": " << millis << (i >= nWarmup ? " *" : " ") << "\n";
 
     // record time after warmup runs
     if (i >= nWarmup) {
@@ -184,7 +184,7 @@ int main(int argc, char **argv) {
 
   // print results
   double gflops = flop / ((elapsed / nIters) / 1000) / 1e9;
-  std::cerr << "kernel " << gflops << "GFLOPS (" << flop << " flop, "
+  std::cout << "kernel " << gflops << "GFLOPS (" << flop << " flop, "
             << (elapsed / nIters) / 1000 << "s)\n";
 
   // release resources
