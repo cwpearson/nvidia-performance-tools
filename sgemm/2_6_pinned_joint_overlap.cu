@@ -83,25 +83,28 @@ int main(int argc, char **argv) {
   argparse::Parser parser;
 
   // default matrix sizes:
-  // A: 1489 x 1493
-  // B: 1493 x 1499
-  // C: 1489 x 1499
-  int m = 1489;
-  int n = 1499;
-  int k = 1493;
+  // A: 1600 x 1500
+  // B: 1500 x 1400
+  // C: 1600 x 1400
+  int m = 1600;
+  int n = 1400;
+  int k = 1500;
 
-  int nIters = 5;
+  int nIters = 10;
+  int nWarmup = 5;
   parser.add_positional(m);
   parser.add_positional(n);
   parser.add_positional(k);
   parser.add_option(nIters, "--iters");
+  parser.add_option(nWarmup, "--warmup");
 
   if (!parser.parse(argc, argv)) {
     parser.help();
     exit(EXIT_FAILURE);
   }
 
-  const int64_t flop = int64_t(m) * int64_t(n) * int64_t(k) * 2;
+  // 4 muls of m/2, n/2, k
+  const int64_t flop = int64_t(m) / 2 * int64_t(n) / 2 * int64_t(k) * 2 * 4 * nIters;
 
   // initialize host data
   std::cerr << "generate data\n";
@@ -133,10 +136,6 @@ int main(int argc, char **argv) {
   CUDA_RUNTIME(cudaMalloc(&cDev[1][0], m / 2 * n / 2 * sizeof(float)));
   CUDA_RUNTIME(cudaMalloc(&cDev[1][1], m / 2 * n / 2 * sizeof(float)));
 
-  // create events to time GPU kernel
-  cudaEvent_t start;
-  CUDA_RUNTIME(cudaEventCreate(&start));
-
   // create streams for copy and kernels
   cudaStream_t copyStream, kernelStream;
   CUDA_RUNTIME(cudaStreamCreate(&copyStream));
@@ -153,97 +152,104 @@ int main(int argc, char **argv) {
   }
 
   // GPU kernel launch parameters
-  dim3 dimGrid((m / 2 + TILE_SZ_A - 1) / TILE_SZ_A,
-               (n / 2 + TILE_SZ_B - 1) / TILE_SZ_B);
+  dim3 dimGrid((m/2 + TILE_SZ_A - 1) / TILE_SZ_A, (n/2 +TILE_SZ_B - 1) / TILE_SZ_B);
   dim3 dimBlock(TILE_SZ_A, 1);
 
-  nvtxRangePush("wall time");
-  auto wallStart = std::chrono::system_clock::now();
+  float kernelTime = 0;
+  float wallTime = 0;
+  for (int iter = 0; iter < nIters + nWarmup; ++iter) {
 
-  // copy a0 and b0
-  CUDA_RUNTIME(cudaMemcpyAsync(aDev[0], aHost[0], m / 2 * k * sizeof(float),
-                               cudaMemcpyDefault, copyStream));
-  CUDA_RUNTIME(cudaMemcpyAsync(bDev[0], bHost[0], k * n / 2 * sizeof(float),
-                               cudaMemcpyDefault, copyStream));
-  CUDA_RUNTIME(cudaEventRecord(waitForA0B0, copyStream));
+    nvtxRangePush("wall time");
+    auto wallStart = Clock::now();
 
-  // have the kernelStream wait for the transfers to complete
-  CUDA_RUNTIME(cudaStreamWaitEvent(kernelStream, waitForA0B0, 0));
+    // copy a0 and b0
+    CUDA_RUNTIME(cudaMemcpyAsync(aDev[0], aHost[0], m / 2 * k * sizeof(float),
+                                 cudaMemcpyDefault, copyStream));
+    CUDA_RUNTIME(cudaMemcpyAsync(bDev[0], bHost[0], k * n / 2 * sizeof(float),
+                                 cudaMemcpyDefault, copyStream));
+    CUDA_RUNTIME(cudaEventRecord(waitForA0B0, copyStream));
 
-  // launch c[0][0] = a[0] * b[0]
-  CUDA_RUNTIME(cudaEventRecord(start, kernelStream));
-  mygemm<<<dimGrid, dimBlock, 0, kernelStream>>>(cDev[0][0], aDev[0], bDev[0],
-                                                 m / 2, n / 2, k);
-  CUDA_RUNTIME(cudaEventRecord(waitC[0][0], kernelStream));
+    // have the kernelStream wait for the transfers to complete
+    CUDA_RUNTIME(cudaStreamWaitEvent(kernelStream, waitForA0B0, 0));
 
-  // copy a1
-  CUDA_RUNTIME(cudaMemcpyAsync(aDev[1], aHost[1], m / 2 * k * sizeof(float),
-                               cudaMemcpyDefault, copyStream));
-  CUDA_RUNTIME(cudaEventRecord(waitForA1, kernelStream));
+    // launch c[0][0] = a[0] * b[0]
+    mygemm<<<dimGrid, dimBlock, 0, kernelStream>>>(cDev[0][0], aDev[0], bDev[0],
+                                                   m / 2, n / 2, k);
+    CUDA_RUNTIME(cudaEventRecord(waitC[0][0], kernelStream));
 
-  // launch c[1][0] = a[1] * b[0] after a[1] is on the GPU
-  CUDA_RUNTIME(cudaStreamWaitEvent(kernelStream, waitForA1, 0));
-  mygemm<<<dimGrid, dimBlock, 0, kernelStream>>>(cDev[1][0], aDev[1], bDev[0],
-                                                 m / 2, n / 2, k);
-  CUDA_RUNTIME(cudaEventRecord(waitC[1][0], kernelStream));
+    // copy a1
+    CUDA_RUNTIME(cudaMemcpyAsync(aDev[1], aHost[1], m / 2 * k * sizeof(float),
+                                 cudaMemcpyDefault, copyStream));
+    CUDA_RUNTIME(cudaEventRecord(waitForA1, kernelStream));
 
-  // copy b1
-  CUDA_RUNTIME(cudaMemcpyAsync(bDev[1], bHost[1], k * n / 2 * sizeof(float),
-                               cudaMemcpyDefault, copyStream));
-  CUDA_RUNTIME(cudaEventRecord(waitForB1, kernelStream));
+    // launch c[1][0] = a[1] * b[0] after a[1] is on the GPU
+    CUDA_RUNTIME(cudaStreamWaitEvent(kernelStream, waitForA1, 0));
+    mygemm<<<dimGrid, dimBlock, 0, kernelStream>>>(cDev[1][0], aDev[1], bDev[0],
+                                                   m / 2, n / 2, k);
+    CUDA_RUNTIME(cudaEventRecord(waitC[1][0], kernelStream));
 
-  // launch c[0][1] = a[0] * b[1] after B1 is on the GPU
-  CUDA_RUNTIME(cudaStreamWaitEvent(kernelStream, waitForB1, 0));
-  mygemm<<<dimGrid, dimBlock, 0, kernelStream>>>(cDev[0][1], aDev[0], bDev[1],
-                                                 m / 2, n / 2, k);
-  CUDA_RUNTIME(cudaEventRecord(waitC[0][1], kernelStream));
+    // copy b1
+    CUDA_RUNTIME(cudaMemcpyAsync(bDev[1], bHost[1], k * n / 2 * sizeof(float),
+                                 cudaMemcpyDefault, copyStream));
+    CUDA_RUNTIME(cudaEventRecord(waitForB1, kernelStream));
 
-  // launch c[1][1] = a[1] * b[1]
-  mygemm<<<dimGrid, dimBlock, 0, kernelStream>>>(cDev[1][1], aDev[1], bDev[1],
-                                                 m / 2, n / 2, k);
-  CUDA_RUNTIME(cudaEventRecord(waitC[1][1], kernelStream));
+    // launch c[0][1] = a[0] * b[1] after B1 is on the GPU
+    CUDA_RUNTIME(cudaStreamWaitEvent(kernelStream, waitForB1, 0));
+    mygemm<<<dimGrid, dimBlock, 0, kernelStream>>>(cDev[0][1], aDev[0], bDev[1],
+                                                   m / 2, n / 2, k);
+    CUDA_RUNTIME(cudaEventRecord(waitC[0][1], kernelStream));
 
-  // copy c back to CPU as kernels finish
-  CUDA_RUNTIME(cudaStreamWaitEvent(copyStream, waitC[0][0], 0));
-  CUDA_RUNTIME(cudaMemcpyAsync(cHost[0][0], cDev[0][0],
-                               m / 2 * n / 2 * sizeof(float), cudaMemcpyDefault,
-                               copyStream));
-  CUDA_RUNTIME(cudaStreamWaitEvent(copyStream, waitC[1][0], 0));
-  CUDA_RUNTIME(cudaMemcpyAsync(cHost[1][0], cDev[1][0],
-                               m / 2 * n / 2 * sizeof(float), cudaMemcpyDefault,
-                               copyStream));
-  CUDA_RUNTIME(cudaStreamWaitEvent(copyStream, waitC[0][1], 0));
-  CUDA_RUNTIME(cudaMemcpyAsync(cHost[0][1], cDev[0][1],
-                               m / 2 * n / 2 * sizeof(float), cudaMemcpyDefault,
-                               copyStream));
-  CUDA_RUNTIME(cudaStreamWaitEvent(copyStream, waitC[1][1], 0));
-  CUDA_RUNTIME(cudaMemcpyAsync(cHost[1][1], cDev[1][1],
-                               m / 2 * n / 2 * sizeof(float), cudaMemcpyDefault,
-                               copyStream));
+    // launch c[1][1] = a[1] * b[1]
+    mygemm<<<dimGrid, dimBlock, 0, kernelStream>>>(cDev[1][1], aDev[1], bDev[1],
+                                                   m / 2, n / 2, k);
+    CUDA_RUNTIME(cudaEventRecord(waitC[1][1], kernelStream));
 
-  CUDA_RUNTIME(cudaDeviceSynchronize());
-  auto wallStop = std::chrono::system_clock::now();
-  nvtxRangePop(); // wall time
-  float wallElapsed = std::chrono::duration_cast<std::chrono::duration<float>>(
-                          wallStop - wallStart)
-                          .count();
+    // copy c back to CPU as kernels finish
+    CUDA_RUNTIME(cudaStreamWaitEvent(copyStream, waitC[0][0], 0));
+    CUDA_RUNTIME(cudaMemcpyAsync(cHost[0][0], cDev[0][0],
+                                 m / 2 * n / 2 * sizeof(float),
+                                 cudaMemcpyDefault, copyStream));
+    CUDA_RUNTIME(cudaStreamWaitEvent(copyStream, waitC[1][0], 0));
+    CUDA_RUNTIME(cudaMemcpyAsync(cHost[1][0], cDev[1][0],
+                                 m / 2 * n / 2 * sizeof(float),
+                                 cudaMemcpyDefault, copyStream));
+    CUDA_RUNTIME(cudaStreamWaitEvent(copyStream, waitC[0][1], 0));
+    CUDA_RUNTIME(cudaMemcpyAsync(cHost[0][1], cDev[0][1],
+                                 m / 2 * n / 2 * sizeof(float),
+                                 cudaMemcpyDefault, copyStream));
+    CUDA_RUNTIME(cudaStreamWaitEvent(copyStream, waitC[1][1], 0));
+    CUDA_RUNTIME(cudaMemcpyAsync(cHost[1][1], cDev[1][1],
+                                 m / 2 * n / 2 * sizeof(float),
+                                 cudaMemcpyDefault, copyStream));
 
-  // kernel time
-  float kernelElapsed;
-  CUDA_RUNTIME(cudaEventSynchronize(waitC[1][1]));
-  CUDA_RUNTIME(cudaEventElapsedTime(&kernelElapsed, start, waitC[1][1]));
-  kernelElapsed /= 1000; // seconds
+    CUDA_RUNTIME(cudaDeviceSynchronize());
+    nvtxRangePop(); // wall time
+    Duration wallElapsed = Clock::now() - wallStart;
+
+    // kernel time
+    float kernelElapsed;
+    CUDA_RUNTIME(cudaEventElapsedTime(&kernelElapsed, waitForA0B0, waitC[1][1]));
+    kernelElapsed /= 1000; // seconds
+
+    std::cerr << iter << " kernel=" << kernelElapsed
+              << " wall=" << wallElapsed.count()
+              << (iter >= nWarmup ? " *" : "  ") << "\n";
+
+    if (iter >= nWarmup) {
+      wallTime += wallElapsed.count();
+      kernelTime += kernelElapsed;
+    }
+  }
 
   // print results
-  double kernelGflops = flop / 1e9 / kernelElapsed;
+  double kernelGflops = flop / 1e9 / kernelTime;
   std::cerr << "kernel " << kernelGflops << "GFLOPS (" << flop << " flop, "
-            << kernelElapsed << "s)\n";
-  double wallGflops = flop / 1e9 / wallElapsed;
+            << kernelTime << "s)\n";
+  double wallGflops = flop / 1e9 / wallTime;
   std::cerr << "wall " << wallGflops << "GFLOPS (" << flop << " flop, "
-            << wallElapsed << "s)\n";
+            << wallTime << "s)\n";
   // release resources
 
-  CUDA_RUNTIME(cudaEventDestroy(start));
   CUDA_RUNTIME(cudaFree(aDev[0]));
   CUDA_RUNTIME(cudaFree(aDev[1]));
   CUDA_RUNTIME(cudaFree(bDev[0]));

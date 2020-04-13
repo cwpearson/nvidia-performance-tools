@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 #ifdef __CUDACC__
 inline void checkCuda(cudaError_t result, const char *file, const int line) {
   if (result != cudaSuccess) {
@@ -10,7 +12,7 @@ inline void checkCuda(cudaError_t result, const char *file, const int line) {
 }
 
 #define CUDA_RUNTIME(stmt) checkCuda(stmt, __FILE__, __LINE__);
-#endif 
+#endif
 
 /* NOTE: A and C are column major, B is row major
  */
@@ -39,7 +41,11 @@ inline void cpu_gemm(float *c,       //<! [out] and MxN matrix
 }
 
 inline bool equal(float x, float y, float eps) {
-  return std::abs(x - y) <= eps * std::max(std::max(1.0f, std::abs(x)), std::abs(y));
+  return std::abs(x - y) <=
+         eps * std::max(std::max(1.0f, std::abs(x)), std::abs(y));
 }
 
-inline int random_int () { return (std::rand()%100); }
+inline int random_int() { return (std::rand() % 100); }
+
+typedef std::chrono::high_resolution_clock Clock;
+typedef std::chrono::duration<float> Duration;

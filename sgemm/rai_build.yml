@@ -26,9 +26,12 @@ commands:
     - ./sgemm-tiled
     - ./sgemm-regtiled-coarsened
     - echo "Nsight Compute"
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o sgemm-basic              sgemm-basic
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o sgemm-tiled              sgemm-tiled
-    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o sgemm-regtiled-coarsened sgemm-regtiled-coarsened
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 0-pageable-basic       0-pageable-basic
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 1-pinned-basic         1-pinned-basic
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 2-pinned-tiled         2-pinned-tiled
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 3-pinned-joint         3-pinned-joint
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 4-pinned-joint-wall    4-pinned-joint-wall
+    - nv-nsight-cu-cli --kernel-id ::mygemm:6 --section ".*" -o 5-pinned-joint-overlap 5-pinned-joint-overlap
     - echo "Nsight Systems timeline"
     - nsys profile -f true -o sgemm-basic.qdrep              sgemm-basic 
     - nsys profile -f true -o sgemm-tiled.qdrep              sgemm-tiled

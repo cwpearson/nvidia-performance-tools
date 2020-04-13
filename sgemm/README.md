@@ -11,6 +11,20 @@ There are three programs:
 * `sgemm-tiled` (`tiled.cu`): a shared-memory tiled multiplication
 * `sgemm-regtiled-coarsened` (`regtiled_coarsened.cu`): a register-tiled and coarsened multiplication
 
+
+## Module 1: Nvidia Nsight Compute
+
+* `1-1-basic`: (`pinned_basic.cu`)
+* `1-2-tiled`: (`pinned_tiled.cu`)
+* `1-3-joint`: (`pinned_joint.cu`)
+
+## Module 2: Nvidia Nsight Systems
+
+* `2-1-pageable-basic`: (`pageable_basic.cu`)
+* `2-2-pinned-basic`: (`pinned_basic.cu`)
+* `2-3-pinned-joint`: (`pinned_joint_wall.cu`)
+* `2-3-pinned-joint`: (`pinned_joint_overlap.cu`)
+
 All programs share the same basic options:
 
 * Three optional positional arguments to set M, N, and K.
