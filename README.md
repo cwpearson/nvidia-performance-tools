@@ -202,9 +202,9 @@ Resume a previously exited container:
 * docker attach <ID> # attach a terminal to the container
 ```
 
-## For Developers
+## For Contributors
 
-See [DEVELOPING.md](DEVELOPING.md)
+See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Resources
 
