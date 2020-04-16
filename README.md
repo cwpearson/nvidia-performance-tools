@@ -176,6 +176,8 @@ In **Nsight Compute**:
 
 File > Open File ... > file.nsight-cuprof-report
 
+If you profiled on a different system than the GUI tool is running on, and you want to look at a View that includes the source, you may have to click the "resolve" button to nagivate to a local copy of the source file.
+
 In **Nsight Systems**:
 
 File > Open > file.qdrep
