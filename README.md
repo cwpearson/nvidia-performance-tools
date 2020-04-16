@@ -18,6 +18,7 @@ If you are developing a workflow and want stability, choose a tag like `amd64-10
 
 * ECE 408 Spring 2020 guest lecture for Professor Lumetta.
   * Slides: `docs/20200416_ece408.pdf`
+  * Recorded Lecture (75 mins) [Part 1]() [Part 2]() [Part 3: Nsight Compute]() [Part 4: Nsight Systems]()
 
 ## Installing Nsight Systems and Nsight Compute
 
@@ -219,4 +220,4 @@ See [DEVELOPING.md](DEVELOPING.md)
     * [Nsight Visual Studio Edition](https://docs.nvidia.com/gameworks/content/developertools/desktop/analysis/report/cudaexperiments/kernellevel/achievedoccupancy.htm)
 
 * Slides
-  * `docs/GEMM-joint-tiling.ppt`: Joint-tiling slide deck from ECE 508 Spring 2017
+  * [docs/GEMM-joint-tiling.ppt](docs/GEMM-joint-tiling.ppt): Joint-tiling slide deck from ECE 508 Spring 2017
