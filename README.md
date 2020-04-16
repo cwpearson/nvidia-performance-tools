@@ -18,7 +18,11 @@ If you are developing a workflow and want stability, choose a tag like `amd64-10
 
 * ECE 408 Spring 2020 guest lecture for Professor Lumetta.
   * [Slides](docs/20200416_ece408.pdf)
-  * Recorded Lecture (75 mins) [Part 1: Intro]() [Part 2: CUDA Events](https://youtu.be/yI137sSOlkU) [Part 3: Nsight Compute]() [Part 4: Nsight Systems]()
+  * Recorded Lecture (75 mins)
+    * [Part 1: Intro]()
+    * [Part 2: CUDA Events](https://youtu.be/yI137sSOlkU)
+    * [Part 3: Nsight Compute]()
+    * [Part 4: Nsight Systems]()
 
 ## Installing Nsight Systems and Nsight Compute
 
