@@ -1,5 +1,7 @@
 # Building a Development Container
 
+First, download any dependencies required in `ci/install_deps.sh`.
+
 Build a test image
 ```
 docker build -f amd64_10-1.dockerfile -t npt-dev .
