@@ -49,7 +49,7 @@ They will be installed together, unless a CLI-only version is downloaded.
 nvtxRangePush("span 1");
 nvtxRangePush("a nested span");
 nvtxRangePop(); // end nested span
-nvtxRange(); // end span 1
+nvtxRangePop(); // end span 1
 ```
 
 Also link with `-lnvToolsExt`.
@@ -206,12 +206,10 @@ See [DEVELOPING.md](DEVELOPING.md)
 
 * [Nvidia Nsight Systems Docs](https://docs.nvidia.com/nsight-systems/)
 * [Nvidia Nsight Compute Docs](https://docs.nvidia.com/nsight-compute/)
-
 * NVIDIA Devloper Blog
   * [Nsight Systems Exposes GPU Optimization (May 30 2018)](https://devblogs.nvidia.com/nsight-systems-exposes-gpu-optimization/)
   * [Using Nsight Compute to Inspect your Kernels (Sep 16 2019)](https://devblogs.nvidia.com/using-nsight-compute-to-inspect-your-kernels/)
   * [Using Nvidia Nsight Systems in Containers and the Cloud (Jan 29 2020)](https://devblogs.nvidia.com/nvidia-nsight-systems-containers-cloud/)
-
 * Interpreting Nsight Compute Results
   * Workload Memory Analysis
     * [CUDA Memory Model](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#memory-hierarchy)
@@ -222,6 +220,5 @@ See [DEVELOPING.md](DEVELOPING.md)
     * [Issue Efficiency Nsight Visual Studio Edition](https://docs.nvidia.com/gameworks/content/developertools/desktop/analysis/report/cudaexperiments/kernellevel/issueefficiency.htm)
   * Occupancy
     * [Nsight Visual Studio Edition](https://docs.nvidia.com/gameworks/content/developertools/desktop/analysis/report/cudaexperiments/kernellevel/achievedoccupancy.htm)
-
 * Slides
   * [docs/GEMM-joint-tiling.ppt](docs/GEMM-joint-tiling.ppt): Joint-tiling slide deck from ECE 508 Spring 2017
