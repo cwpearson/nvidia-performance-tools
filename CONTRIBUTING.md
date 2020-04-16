@@ -41,3 +41,10 @@ Carl Pearson's docker hub account is used to push images up to [cwpearson/nvidia
 * [ ] CUDA Event and Stream timing examples
   * [ ] single-device
   * [ ] multi-device
+
+## Inspirations
+
+* https://developer.download.nvidia.com/video/gputechconf/gtc/2020/presentations/s22141-what-the-profiler-is-telling-you-how-to-get-the-most-performance-out-of-your-hardware.pdf
+  * https://developer.nvidia.com/gtc/2020/video/s22141
+* https://developer.download.nvidia.com/video/gputechconf/gtc/2020/presentations/s21351-scaling-the-transformer-model-implementation-in-pytorch-across-multiple-nodes.pdf
+  * https://developer.nvidia.com/gtc/2020/video/s21351
