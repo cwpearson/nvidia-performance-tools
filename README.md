@@ -16,7 +16,8 @@ If you are developing a workflow and want stability, choose a tag like `amd64-10
 
 ## Presentations
 
-[ECE 408 Spring 2020 - Introduction to Nvidia Performance Tools](https://docs.google.com/presentation/d/1A5i3Zdh7ltOLdW7qHZ2tviXYcyl1sKvM7kRpnzOD7tQ/edit?usp=sharing)
+* ECE 408 Spring 2020 guest lecture for Professor Lumetta.
+  * Slides: `docs/20200416_ece408.pdf`
 
 ## Installing Nsight Systems and Nsight Compute
 
