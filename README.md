@@ -24,6 +24,10 @@ If you are developing a workflow and want stability, choose a tag like `amd64-10
     * [Part 3: Nsight Compute](https://youtu.be/UNX0KNMQlW8)
     * [Part 4: Nsight Systems](https://youtu.be/YHrmnaPgFfY)
 
+## Examples
+
+* [sgemm](sgemm) Featuring basic, shared-memory tiled, and joint shared-memory and register tiling.
+
 ## Installing Nsight Systems and Nsight Compute
 
 There is a command-line (CLI) and graphical (GUI) version of each tool.
