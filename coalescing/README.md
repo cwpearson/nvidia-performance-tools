@@ -157,6 +157,10 @@ nv-nsight-cu-cli --kernel-id "::indirect:2" --metrics l1tex__t_sectors_pipe_lsu_
     ---------------------------------------------------------------------- --------------- ------------------------------
 ```
 
+## Instruction Profiling
+
+Compare `Instructions Executed`, `L1 Transactions`, and `L2 Transactions`.
+
 ## Resources
 
 This content is inspired by https://devblogs.nvidia.com/using-nsight-compute-to-inspect-your-kernels/
