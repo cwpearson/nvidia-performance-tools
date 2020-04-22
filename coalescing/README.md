@@ -108,16 +108,16 @@ Why the cache behavior is different is unclear
 **For the indices**
 
 10,000 ints -> 40KB
-40 KB into 128B / request = 313 requests.
+40 KB into 128B / request = 313 requests (312.5)
 Each request should be satisfied by 4 32B sectors except for the last request, which is 2 32B sectors, so 1250 sectors.
 This is because the accesses into the offset array is coalesced.
 
 **For the floats**
 
 10,000 floats -> 40KB
-40 KB into 32B / request = 1250 requests.
+40 KB into 128B / request = 313 requests (312.5)
 if coalesced, same as above, for 1250 sectors.
-If uncoalesced, each 128B request may ultimated be 32 separate 4B floats each from a different sector, so up to 10K sectors.
+If uncoalesced, each 128B request may ultimately be 32 separate 4B floats each from a different sector, so up to 10K sectors.
 
 **Putting it Together**
 
@@ -162,3 +162,4 @@ nv-nsight-cu-cli --kernel-id "::indirect:2" --metrics l1tex__t_sectors_pipe_lsu_
 This content is inspired by https://devblogs.nvidia.com/using-nsight-compute-to-inspect-your-kernels/
 
 Metrics Names: https://docs.nvidia.com/cupti/Cupti/r_main.html#r_host_derived_metrics_api
+
