@@ -7,19 +7,18 @@
 #include "common.hpp"
 
 
-__global__ void indirect(float *p, int *off, const size_t n) {
+template <typename T>
+__global__ void indirect(T *p, const int *off, const size_t n) {
   int tid = blockDim.x * blockIdx.x + threadIdx.x;
 
   for (int i = tid; i < n; i += gridDim.x * blockDim.x) {
     int idx = off[i];
-    float f = p[idx];
+    T f = p[idx];
     f += 1;
     p[idx] = f;
   }
 
 }
-
-
 
 int main(int argc, char **argv) {
 
@@ -43,9 +42,11 @@ int main(int argc, char **argv) {
 
 
   // allocate device data
-  float *aDev;
+  float *fDev;
+  double *dDev;
   int *cDev, *uDev;
-  CUDA_RUNTIME(cudaMalloc(&aDev, n * sizeof(float)));
+  CUDA_RUNTIME(cudaMalloc(&fDev, n * sizeof(*fDev)));
+  CUDA_RUNTIME(cudaMalloc(&dDev, n * sizeof(*dDev)));
   CUDA_RUNTIME(cudaMalloc(&cDev, n * sizeof(int)));
   CUDA_RUNTIME(cudaMalloc(&uDev, n * sizeof(int)));
 
@@ -59,13 +60,18 @@ int main(int argc, char **argv) {
   dimGrid.x = (n + dimBlock.x - 1) / dimBlock.x;
 
   for (int i = 0; i < nIters + nWarmup; ++i) {
-    indirect<<<dimGrid, dimBlock>>>(aDev, cDev, n);
+    indirect<<<dimGrid, dimBlock>>>(fDev, cDev, n);
     CUDA_RUNTIME(cudaDeviceSynchronize());
-    indirect<<<dimGrid, dimBlock>>>(aDev, uDev, n);
+    indirect<<<dimGrid, dimBlock>>>(fDev, uDev, n);
+    CUDA_RUNTIME(cudaDeviceSynchronize());
+    indirect<<<dimGrid, dimBlock>>>(dDev, cDev, n);
+    CUDA_RUNTIME(cudaDeviceSynchronize());
+    indirect<<<dimGrid, dimBlock>>>(dDev, uDev, n);
     CUDA_RUNTIME(cudaDeviceSynchronize());
   }
 
-  CUDA_RUNTIME(cudaFree(aDev));
+  CUDA_RUNTIME(cudaFree(fDev));
+  CUDA_RUNTIME(cudaFree(dDev));
   CUDA_RUNTIME(cudaFree(cDev));
   CUDA_RUNTIME(cudaFree(uDev));
 

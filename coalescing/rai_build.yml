@@ -21,5 +21,7 @@ commands:
     - echo "Nsight Compute Results"
     - nv-nsight-cu-cli --kernel-id "::indirect:1" --metrics l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum,l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum main | tee coalesced.txt
     - nv-nsight-cu-cli --kernel-id "::indirect:2" --metrics l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum,l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum main | tee uncoalesced.txt
-    - nv-nsight-cu-cli --kernel-id "::indirect:1" --section ".*" -o coalesced main
-    - nv-nsight-cu-cli --kernel-id "::indirect:2" --section ".*" -o uncoalesced main
+    - nv-nsight-cu-cli --kernel-id "::indirect:1" --section ".*" -o f32_coalesced main
+    - nv-nsight-cu-cli --kernel-id "::indirect:2" --section ".*" -o f32_uncoalesced main
+    - nv-nsight-cu-cli --kernel-id "::indirect:3" --section ".*" -o f64_coalesced main
+    - nv-nsight-cu-cli --kernel-id "::indirect:4" --section ".*" -o f64_uncoalesced main
