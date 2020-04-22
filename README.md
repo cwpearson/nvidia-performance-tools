@@ -27,6 +27,7 @@ If you are developing a workflow and want stability, choose a tag like `amd64-10
 ## Examples
 
 * [sgemm](sgemm) Featuring basic, shared-memory tiled, and joint shared-memory and register tiling.
+* [coalescing](coalescing) Featuring a simple code with and without memory coalescing, and discussion of how to analyze in Nsight Compute
 
 ## Installing Nsight Systems and Nsight Compute
 
