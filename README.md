@@ -155,6 +155,9 @@ WarpStateStats                Warp State Statistics           ...-x64/../../sect
 
 To see supported metrics on a device, do `nv-nsight-cu-cli --devices 0 --query-metrics`
 
+On some newer devices, the base metrics name will not work. You need to append an allowed suffix. To see all the legal names and suffices, do `nv-nsight-cu-cli --devices 0 --query-metrics --query-metrics-mode all`
+
+
 The `--kernel-id` flag takes a string like `context-id:stream-id:[name-operator:]kernel-name:invocation-nr`.
 Commonly, we might only use `kernel-name`, to select kernels to profile by name, and `invocation-nr`, to select which invocation of the kernels to profile.
 

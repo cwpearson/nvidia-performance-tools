@@ -1,41 +1,25 @@
 #include <algorithm>
-
-#include <curand_kernel.h>
+#include <numeric>
+#include <random>
 
 #include <argparse/argparse.hpp>
 
 #include "common.hpp"
 
 
-__global__ void coalesced(float *p, const size_t n) {
+__global__ void indirect(float *p, int *off, const size_t n) {
   int tid = blockDim.x * blockIdx.x + threadIdx.x;
 
-  if (tid < n) {
-    unsigned int off = tid;
-    float f = p[off];
+  for (int i = tid; i < n; i += gridDim.x * blockDim.x) {
+    int idx = off[i];
+    float f = p[idx];
     f += 1;
-    p[off] = f;
+    p[idx] = f;
   }
 
 }
 
-__global__ void uncoalesced(float *p, const size_t n) {
-  int tid = blockDim.x * blockIdx.x + threadIdx.x;
-  unsigned long long seed = 0;
-  unsigned long long sequence = tid;
-  unsigned long long offset = 0;
 
-  curandState_t state;
-  curand_init ( seed, sequence, offset, &state);
-
-  if (tid < n) {
-    unsigned int off = curand(state);
-    float f = p[off];
-    f += 1;
-    p[off] = f;
-  }  
-
-}
 
 int main(int argc, char **argv) {
 
@@ -51,9 +35,23 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
+  // generate access patterns
+  std::vector<int> cHost(n), uHost(n);
+  std::iota(cHost.begin(), cHost.end(), 0);
+  std::iota(uHost.begin(), uHost.end(), 0);
+  std::shuffle(uHost.begin(), uHost.end(), std::mt19937{std::random_device{}()});
+
+
   // allocate device data
   float *aDev;
+  int *cDev, *uDev;
   CUDA_RUNTIME(cudaMalloc(&aDev, n * sizeof(float)));
+  CUDA_RUNTIME(cudaMalloc(&cDev, n * sizeof(int)));
+  CUDA_RUNTIME(cudaMalloc(&uDev, n * sizeof(int)));
+
+  // copy indices to device
+  CUDA_RUNTIME(cudaMemcpy(cDev, cHost.data(), cHost.size() * sizeof(int), cudaMemcpyDefault));
+  CUDA_RUNTIME(cudaMemcpy(uDev, uHost.data(), uHost.size() * sizeof(int), cudaMemcpyDefault));
 
   // GPU kernel launch parameters
   dim3 dimBlock(512,1,1);
@@ -61,13 +59,15 @@ int main(int argc, char **argv) {
   dimGrid.x = (n + dimBlock.x - 1) / dimBlock.x;
 
   for (int i = 0; i < nIters + nWarmup; ++i) {
-    coalesced<<<dimGrid, dimBlock>>>(aDev, n);
+    indirect<<<dimGrid, dimBlock>>>(aDev, cDev, n);
     CUDA_RUNTIME(cudaDeviceSynchronize());
-    uncoalesced<<<dimGrid, dimBlock>>>(aDev, n);
+    indirect<<<dimGrid, dimBlock>>>(aDev, uDev, n);
     CUDA_RUNTIME(cudaDeviceSynchronize());
   }
 
   CUDA_RUNTIME(cudaFree(aDev));
+  CUDA_RUNTIME(cudaFree(cDev));
+  CUDA_RUNTIME(cudaFree(uDev));
 
   return 0;
 }

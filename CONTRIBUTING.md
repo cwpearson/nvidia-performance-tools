@@ -41,6 +41,8 @@ Carl Pearson's docker hub account is used to push images up to [cwpearson/nvidia
 * [ ] CUDA Event and Stream timing examples
   * [ ] single-device
   * [ ] multi-device
+* [ ] interacting with `.qdrep` files.
+* [ ] interacting with `.nsight-cuprof-report` files.
 
 ## Inspirations
 
