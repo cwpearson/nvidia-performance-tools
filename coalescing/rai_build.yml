@@ -1,0 +1,25 @@
+rai:
+  version: 0.2
+  image: cwpearson/nvidia-performance-tools:amd64-10.1-master-c4d1bb1
+resources:
+  cpu:
+    architecture: amd64
+  gpu:
+    count: 1
+  network: false
+  cache: false
+commands:
+  build:
+    - which nv-nsight-cu-cli
+    - nv-nsight-cu-cli --version
+    - nvidia-smi
+    - cp -r /src .
+    - cmake /src -DCMAKE_BUILD_TYPE=Release
+    - make
+    - echo "Check Nsight Configurations"
+    - bash -c "nv-nsight-cu-cli --devices 0 --query-metrics --query-metrics-mode all > metrics.txt"
+    - echo "Nsight Compute Results"
+    - nv-nsight-cu-cli --kernel-id "::indirect:1" --metrics l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum,l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum main | tee coalesced.txt
+    - nv-nsight-cu-cli --kernel-id "::indirect:2" --metrics l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum,l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum main | tee uncoalesced.txt
+    - nv-nsight-cu-cli --kernel-id "::indirect:1" --section ".*" -o coalesced main
+    - nv-nsight-cu-cli --kernel-id "::indirect:2" --section ".*" -o uncoalesced main
