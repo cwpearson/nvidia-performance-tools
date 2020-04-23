@@ -27,7 +27,7 @@ If you are developing a workflow and want stability, choose a tag like `amd64-10
 ## Examples
 
 * [sgemm](sgemm) Featuring basic, shared-memory tiled, and joint shared-memory and register tiling.
-* [coalescing](coalescing) Featuring a simple code with and without memory coalescing, and discussion of how to analyze in Nsight Compute
+* [coalescing](coalescing) Featuring a simple code with and without memory coalescing, and discussion of how to analyze efficiency in Nsight Compute
 
 ## Installing Nsight Systems and Nsight Compute
 
@@ -232,3 +232,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
     * [Nsight Visual Studio Edition](https://docs.nvidia.com/gameworks/content/developertools/desktop/analysis/report/cudaexperiments/kernellevel/achievedoccupancy.htm)
 * Slides
   * [docs/GEMM-joint-tiling.ppt](docs/GEMM-joint-tiling.ppt): Joint-tiling slide deck from ECE 508 Spring 2017
+
+* GTC
+  * [Volta Architecture and Performance Optimization](http://on-demand.gputechconf.com/gtc/2018/presentation/s81006-volta-architecture-and-performance-optimization.pdf): Volta L1 will cache writes

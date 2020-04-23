@@ -1,6 +1,6 @@
-# Coalescing Examples
+# Coalescing
 
-Examples for measuring memory coalescing in Nsight Compute
+Examples for measuring memory access efficiency using Nsight Compute.
 
 To really see this in Nsight Compute, you need at least 2019.5.
 Earlier versions do not show requested command line profiler metrics.
@@ -21,13 +21,15 @@ If in L2 only, 32-byte transactions
 
 Each memory request is broken down into cache line requests that are issued independently. So, a 128B request may turn into some number of 128B or 32B cache line requests / transactions.
 
-CC5.x
- Always cached in L2, which is same as CC3.x
+CC prior to 7.x: Read/Write is not cached in L1
+CC 7.x: Read/Write is cached in L1.
 
-CC6.x same as CC5.x
-CC7.x same as CC5.x
+*sector*: an aligned 32B region, the memory access granularity.
 
-*sector*: an L1 line
+## Documents
+* slides
+  * [Google Slides, view-only](https://docs.google.com/presentation/d/1L3o1mNqtXqHtBKidrKcfYeLx-AigNiptTtRODgUk9-I/edit?usp=sharing)
+  * [pdf](../slides/memory_access_efficiency.pdf)
 
 ## Measuring Memory Coalescing with Nsight Compute
 
