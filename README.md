@@ -16,8 +16,12 @@ If you are developing a workflow and want stability, choose a tag like `amd64-10
 
 ## Presentations
 
-* ECE 408 Spring 2020 guest lecture for Professor Lumetta.
-  * [Slides](docs/20200416_ece408.pdf)
+* April 21-23 2020 University of Illinois ECE 498 guest lecture for Professors Hwu, Chen, and Xiong.
+  * [Slides](slides/20200421_ece498_Nsight.pdf)
+  * Recorded Lectures
+    * [Part 1: Intro, CUDA Events, Nsight Compute](https://youtu.be/JqlrVcfyp7E)
+* April 16 2020 University of Illinois ECE 408 guest lecture for Professor Lumetta.
+  * [Slides](slides/20200416_ece408.pdf)
   * Recorded Lecture (75 mins)
     * [Part 1: Intro](https://youtu.be/uN2qju175aE)
     * [Part 2: CUDA Events](https://youtu.be/yI137sSOlkU)
