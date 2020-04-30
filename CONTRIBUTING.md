@@ -43,6 +43,15 @@ Carl Pearson's docker hub account is used to push images up to [cwpearson/nvidia
   * [ ] multi-device
 * [ ] interacting with `.qdrep` files.
 * [ ] interacting with `.nsight-cuprof-report` files.
+* [ ] Best Practices
+  * [ ] Fixing GPU frequency
+  * [ ] initial CUDA runtime cost
+  * [ ] Warmup Kernels
+  * [ ] `cuda-memcheck` race condition and sync check?
+* Is stream 0 the default stream?
+* Nsight System with MPI
+* Nsight System with multi-GPU
+
 
 ## Inspirations
 
