@@ -222,9 +222,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 * [Nvidia Nsight Compute Docs](https://docs.nvidia.com/nsight-compute/)
 * NVIDIA Devloper Blog
   * [Nsight Systems Exposes GPU Optimization (May 30 2018)](https://devblogs.nvidia.com/nsight-systems-exposes-gpu-optimization/)
+  * [Transitioning to Nsight Systems from NVIDIA Visual Profiler / nvprof (Aug 2 2019)](https://devblogs.nvidia.com/transitioning-nsight-systems-nvidia-visual-profiler-nvprof/)
   * [Using Nsight Compute to Inspect your Kernels (Sep 16 2019)](https://devblogs.nvidia.com/using-nsight-compute-to-inspect-your-kernels/)
   * [Using Nvidia Nsight Systems in Containers and the Cloud (Jan 29 2020)](https://devblogs.nvidia.com/nvidia-nsight-systems-containers-cloud/)
-  * [Transitioning to Nsight Systems from NVIDIA Visual Profiler / nvprof](https://devblogs.nvidia.com/transitioning-nsight-systems-nvidia-visual-profiler-nvprof/)
+  
 * Interpreting Nsight Compute Results
   * Workload Memory Analysis
     * [CUDA Memory Model](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#memory-hierarchy)
