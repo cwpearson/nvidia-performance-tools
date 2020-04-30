@@ -48,9 +48,10 @@ Carl Pearson's docker hub account is used to push images up to [cwpearson/nvidia
   * [ ] initial CUDA runtime cost
   * [ ] Warmup Kernels
   * [ ] `cuda-memcheck` race condition and sync check?
-* Is stream 0 the default stream?
-* Nsight System with MPI
-* Nsight System with multi-GPU
+* [ ] Is stream 0 the default stream?
+* [ ] Nsight System with MPI
+* [ ] Nsight System with multi-GPU
+* [ ] Nsight Compute multi-GPU
 
 
 ## Inspirations
