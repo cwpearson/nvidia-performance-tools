@@ -20,6 +20,7 @@ If you are developing a workflow and want stability, choose a tag like `amd64-10
   * [Slides](slides/20200421_ece498_Nsight.pdf)
   * Recorded Lectures
     * [Part 1: Intro, CUDA Events, Nsight Compute](https://youtu.be/JqlrVcfyp7E)
+    * [Part 2: Nsight Systems](https://youtu.be/GvK_vKb5Btk)
 * April 16 2020 University of Illinois ECE 408 guest lecture for Professor Lumetta.
   * [Slides](slides/20200416_ece408.pdf)
   * Recorded Lecture (75 mins)
